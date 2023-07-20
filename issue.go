@@ -1,7 +1,13 @@
 package issue
 
+import (
+	"fmt"
+
+	"github.com/waltervargas/gobdb"
+)
+
 type Tracker struct {
-	issues []Issue
+	db gobdb.Gobdb[Issue]
 }
 
 type Issue struct {
@@ -9,15 +15,23 @@ type Issue struct {
 }
 
 func OpenTracker(path string) (*Tracker, error){
-	return &Tracker{}, nil
+	db, err := gobdb.Open[Issue](path)
+	if err != nil {
+		return nil, fmt.Errorf("unable to open DB: %w", err)
+	}
+
+	return &Tracker{db: db}, nil
 }
 
 func (t *Tracker) ListIssues() ([]Issue){
-	return t.issues
+	return t.db.List()
 }
 
 func (t *Tracker) CreateIssue(name string) (Issue, error){
 	issue := Issue{Name: name}
-	t.issues = append(t.issues, issue)
+	err := t.db.Add(issue)
+	if err != nil {
+		return Issue{}, err
+	}
 	return issue, nil
 }
