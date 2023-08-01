@@ -8,10 +8,12 @@ import (
 
 type Tracker struct {
 	db gobdb.Gobdb[Issue]
+	nextID int
 }
 
 type Issue struct {
 	Name string
+	ID string
 }
 
 func OpenTracker(path string) (*Tracker, error){
@@ -28,10 +30,19 @@ func (t *Tracker) ListIssues() ([]Issue){
 }
 
 func (t *Tracker) CreateIssue(name string) (Issue, error){
-	issue := Issue{Name: name}
+	// calculate the ID
+	// ID depends on the storage engine
+	// scope for this ID is the tracker
+	// tracker + issueID
+	// how can we generate IDs that are unique for this tracker? 
+	// based on ids that we know?
+	
+	issue := Issue{Name: name, ID: fmt.Sprintf("%d", t.nextID)}
+	t.nextID++
 	err := t.db.Add(issue)
 	if err != nil {
 		return Issue{}, err
 	}
+	
 	return issue, nil
 }

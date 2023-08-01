@@ -32,6 +32,9 @@ func TestCreateIssue(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to create issue: %s", err)
 	}
+	if myissue.ID == "" { 
+		t.Errorf("issue.ID field should be different than empty string")
+	}
 	if myissue.Name != issueName {
 		t.Fatalf("want: %q, got: %q", issueName, myissue.Name)
 	}
@@ -45,9 +48,39 @@ func TestCreateIssue(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to open tracker: %s", err)
 	}
-	want := []issue.Issue{ {Name: issueName} }
+	want := []issue.Issue{ {Name: issueName, ID: myissue.ID} }
 	got := tracker.ListIssues()
 	if !cmp.Equal(want, got) {
 		t.Fatal(cmp.Diff(want, got))
 	}
 }
+
+// func TestUpdateIssue(t *testing.T){
+// 	t.Parallel()
+
+// 	tmp := t.TempDir() + "/createIssue.gobdb"
+// 	tracker, err := issue.OpenTracker(tmp)
+// 	if err != nil {
+// 		t.Fatalf("unable to open tracker: %s", err)
+// 	}
+
+// 	name := "my issue"
+// 	myIssue, err := tracker.CreateIssue(name)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+
+// 	myIssue.Description = "blah blah"
+
+// 	err := tracker.UpdateIssue(myIssue)
+// 	if err != nil {
+// 		t.Fatalf("unable to persist issue changes: %s", err)
+// 	}
+
+// 	got, ok := tracker.GetIssue(myIssue.ID)
+// 	if ! ok {
+// 		t.Fatalf("issue not found: %v", myIssue.ID)
+// 	}
+
+// 	// ... 
+// }
