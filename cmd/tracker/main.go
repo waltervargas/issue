@@ -22,7 +22,7 @@ func main() {
 		}
 	}
 	
-	for i, issue := range tracker.ListIssues() {
-		fmt.Printf("[%d] %s\n", i, issue.Name)
+	for _, issue := range tracker.ListIssues() {
+		fmt.Printf("[%s] %s\n", issue.ID, issue.Name)
 	}
 }

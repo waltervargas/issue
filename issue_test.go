@@ -10,11 +10,7 @@ import (
 func TestCreateIssue(t *testing.T) {
 	t.Parallel()
 
-	tmp := t.TempDir() + "/createIssue.gobdb"
-	tracker, err := issue.OpenTracker(tmp)
-	if err != nil {
-		t.Fatalf("unable to open tracker: %s", err)
-	}
+	tracker := newTestTracker(t)
 
 	// how does create change the world?
 	// world before change
@@ -44,7 +40,7 @@ func TestCreateIssue(t *testing.T) {
 		t.Fatalf("want: 1 issues, got: %d issues after calling tracker.CreateIssue()", len(issues))
 	}
 
-	tracker, err = issue.OpenTracker(tmp)
+	tracker, err = issue.OpenTracker(tracker.Path)
 	if err != nil {
 		t.Fatalf("unable to open tracker: %s", err)
 	}
@@ -53,34 +49,71 @@ func TestCreateIssue(t *testing.T) {
 	if !cmp.Equal(want, got) {
 		t.Fatal(cmp.Diff(want, got))
 	}
+
+	myissue2, err := tracker.CreateIssue(issueName)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if myissue.ID == myissue2.ID {
+		t.Errorf("issues ids are not unique: %s == %s", myissue.ID, myissue2.ID)
+	}
 }
 
-// func TestUpdateIssue(t *testing.T){
-// 	t.Parallel()
+func TestGetIssue(t *testing.T) {
+	t.Parallel()
 
-// 	tmp := t.TempDir() + "/createIssue.gobdb"
-// 	tracker, err := issue.OpenTracker(tmp)
-// 	if err != nil {
-// 		t.Fatalf("unable to open tracker: %s", err)
-// 	}
+	tracker := newTestTracker(t)
 
-// 	name := "my issue"
-// 	myIssue, err := tracker.CreateIssue(name)
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
+	issueName := "fix bug in Perl"
+	issue, err := tracker.CreateIssue(issueName)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, ok := tracker.GetIssue(issue.ID)
+	if !ok {
+		t.Fatal(err)
+	}
+	if !cmp.Equal(issue, got) {
+		t.Error(cmp.Diff(issue, got))
+	}
+}
 
-// 	myIssue.Description = "blah blah"
+func TestUpdateIssue(t *testing.T){
+	t.Parallel()
 
-// 	err := tracker.UpdateIssue(myIssue)
-// 	if err != nil {
-// 		t.Fatalf("unable to persist issue changes: %s", err)
-// 	}
+	tracker := newTestTracker(t)
 
-// 	got, ok := tracker.GetIssue(myIssue.ID)
-// 	if ! ok {
-// 		t.Fatalf("issue not found: %v", myIssue.ID)
-// 	}
+	name := "my issue"
+	myIssue, err := tracker.CreateIssue(name)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-// 	// ... 
-// }
+	myIssue.Description = "blah blah"
+	err = tracker.UpdateIssue(myIssue)
+	if err != nil {
+		t.Fatalf("unable to persist issue changes: %s", err)
+	}
+
+	got, ok := tracker.GetIssue(myIssue.ID)
+	if ! ok {
+		t.Fatalf("issue not found: %v", myIssue.ID)
+	}
+
+	if !cmp.Equal(myIssue, got){
+		t.Error(cmp.Diff(myIssue, got))
+	}
+}
+
+func newTestTracker(t *testing.T) *issue.Tracker {
+	t.Helper() // if the test fails, reported as the calling test, not this functions. 
+
+	tmp := t.TempDir() + "/createIssue.gobdb"
+	tracker, err := issue.OpenTracker(tmp)
+	if err != nil {
+		t.Fatalf("unable to open tracker: %s", err)
+	}
+
+	return tracker
+}
+

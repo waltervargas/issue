@@ -4,13 +4,21 @@
 
 ### Beta Release
 
-    - [ ] Issue Creation: Users should be able to report bugs, request features, or ask questions easily.
+    - [X] Issue Creation: Users should be able to report bugs, request features, or ask questions easily.
 
     - [ ] Issue Details: Each issue should have a unique identifier and include fields such as title, description, steps to reproduce, screenshots or attachments, severity, priority, component version, and status.
 
     - [ ] Status Tracking: A way to track and display the status of each issue, such as open, in progress, resolved, closed, duplicate, etc.
 
     - [ ] Search and Filter: Powerful search and filter options to find specific issues.
+
+        - as user of the issue tracker I would like to have a status field so that I can search and filter by issues with open status.
+
+        - for this purpose we need to be able to set a status. (status field.)
+
+        - we need a mechanism to update issues, for example change the status.
+
+    - [ ] self hosted issue tracker with charm cloud https://charm.sh/
 
 ### Non Beta Release
 

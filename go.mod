@@ -7,6 +7,6 @@ require (
 	github.com/waltervargas/gobdb v0.0.3
 )
 
-require golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1 // indirect
+require golang.org/x/exp v0.0.0-20230801115018-d63ba01acd4b
 
 replace github.com/waltervargas/gobdb v0.0.3 => /Users/walter/workspace/gobdb
